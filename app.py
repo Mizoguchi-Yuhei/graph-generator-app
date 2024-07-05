@@ -59,15 +59,16 @@ def create_graph(data):
     ax.axhline(y=0, color='k', linewidth=2)
     ax.axvline(x=0, color='k', linewidth=2)
 
-    # メモリを整数のみに設定し、適切な間隔で表示
-    ax.xaxis.set_major_locator(MaxNLocator(integer=True, nbins=10))
-    ax.yaxis.set_major_locator(MaxNLocator(nbins=10))
+    # メモリを1ずつに設定
+    ax.xaxis.set_major_locator(plt.MultipleLocator(1))
+    ax.yaxis.set_major_locator(plt.MultipleLocator(1))
 
     # x軸とy軸の範囲を適切に設定
     if graph_type not in ['circle', 'sector']:
         y_min, y_max = ax.get_ylim()
-        margin = (y_max - y_min) * 0.1
-        ax.set_ylim(y_min - margin, y_max + margin)
+        y_range = max(abs(y_min), abs(y_max))
+        ax.set_ylim(-y_range, y_range)
+        ax.set_xlim(x_min, x_max)
 
     plt.tight_layout()
     return fig
@@ -88,7 +89,7 @@ def main():
     data = {'type': graph_type, 'xlabel': "x", 'ylabel': "y"}
 
     if graph_type == "polynomial":
-        data['degree'] = st.number_input("次数", min_value=1, max_value=10, value=2)
+        data['degree'] = st.number_input("次数", min_value=1, max_value=5, value=2)
         data['coefficients'] = [parse_fraction(st.text_input(f"{i}次の係数", value="1" if i == data['degree'] else "0")) for i in range(data['degree'], -1, -1)]
     elif graph_type in ["derivative", "integral"]:
         data['coefficients'] = [parse_fraction(st.text_input(f"{i}次の係数", value="1" if i == 2 else "0")) for i in range(2, -1, -1)]
@@ -96,6 +97,9 @@ def main():
         data['amplitude'] = parse_fraction(st.text_input("振幅", value="1"))
         data['frequency'] = parse_fraction(st.text_input("周波数", value="1"))
 
+    if graph_type not in ["circle", "sector"]:
+        data['x_min'] = parse_fraction(st.text_input("x最小値", value="-5"))
+        data['x_max'] = parse_fraction(st.text_input("x最大値", value="5"))
     if graph_type not in ["circle", "sector"]:
         data['x_min'] = parse_fraction(st.text_input("x最小値", value="-10"))
         data['x_max'] = parse_fraction(st.text_input("x最大値", value="10"))
