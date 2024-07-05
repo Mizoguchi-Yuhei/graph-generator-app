@@ -49,7 +49,8 @@ def create_graph(data):
         ax.set_ylim(-data['radius'] - 1, data['radius'] + 1)
         ax.set_aspect('equal')
 
-    title = f"{graph_type.capitalize()}関数" if graph_type != 'polynomial' else f"{data['degree']}次関数"
+    # タイトルから不要な文字を削除
+    title = graph_type.capitalize() if graph_type != 'polynomial' else f"{data['degree']}次関数"
     ax.set_title(title, fontsize=16)
     ax.set_xlabel(data['xlabel'], fontsize=12)
     ax.set_ylabel(data['ylabel'], fontsize=12)
@@ -67,6 +68,7 @@ def create_graph(data):
     if graph_type not in ['circle', 'sector']:
         y_min, y_max = ax.get_ylim()
         y_range = max(abs(y_min), abs(y_max))
+        y_range = min(max(10, y_range), 20)  # y軸の範囲を10から20の間に制限
         ax.set_ylim(-y_range, y_range)
         ax.set_xlim(x_min, x_max)
 
