@@ -10,7 +10,7 @@ from fractions import Fraction
 import matplotlib.font_manager as fm
 
 # 日本語フォントの設定
-font_path = "ipaexg.ttf"  # フォントファイルのパス
+font_path = "SawarabiMincho-Regular.ttf"  # フォントファイルのパス
 font_prop = fm.FontProperties(fname=font_path)
 plt.rcParams['font.family'] = font_prop.get_name()
 
