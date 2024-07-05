@@ -21,12 +21,15 @@ def parse_fraction(s):
         st.error(f"無効な入力: {s}. 数値または分数 (例: 1/2) を入力してください。")
         return 0
 
+
 def create_graph(data):
     fig, ax = plt.subplots(figsize=(10, 8))
     graph_type = data.get('type', 'linear')
 
     x_min = data.get('x_min', -10)
     x_max = data.get('x_max', 10)
+    y_min = data.get('y_min', -10)
+    y_max = data.get('y_max', 10)
     x = np.linspace(x_min, x_max, 1000)
 
     plot_functions = {
@@ -49,8 +52,24 @@ def create_graph(data):
         ax.set_ylim(-data['radius'] - 1, data['radius'] + 1)
         ax.set_aspect('equal')
 
-    # タイトルから不要な文字を削除
-    title = graph_type.capitalize() if graph_type != 'polynomial' else f"{data['degree']}次関数"
+    # タイトルの設定（日本語対応）
+    if graph_type == 'polynomial':
+        title = f"{data['degree']}次関数"
+    elif graph_type == 'sin':
+        title = "正弦関数"
+    elif graph_type == 'cos':
+        title = "余弦関数"
+    elif graph_type == 'derivative':
+        title = "導関数"
+    elif graph_type == 'integral':
+        title = "積分関数"
+    elif graph_type == 'circle':
+        title = "円"
+    elif graph_type == 'sector':
+        title = "扇形"
+    else:
+        title = "線形関数"
+
     ax.set_title(title, fontsize=16)
     ax.set_xlabel(data['xlabel'], fontsize=12)
     ax.set_ylabel(data['ylabel'], fontsize=12)
@@ -64,16 +83,14 @@ def create_graph(data):
     ax.xaxis.set_major_locator(plt.MultipleLocator(1))
     ax.yaxis.set_major_locator(plt.MultipleLocator(1))
 
-    # x軸とy軸の範囲を適切に設定
+    # x軸とy軸の範囲を設定
     if graph_type not in ['circle', 'sector']:
-        y_min, y_max = ax.get_ylim()
-        y_range = max(abs(y_min), abs(y_max))
-        y_range = min(max(10, y_range), 20)  # y軸の範囲を10から20の間に制限
-        ax.set_ylim(-y_range, y_range)
         ax.set_xlim(x_min, x_max)
+        ax.set_ylim(y_min, y_max)
 
     plt.tight_layout()
     return fig
+
 
 def get_image_base64(fig):
     buf = io.BytesIO()
@@ -100,11 +117,10 @@ def main():
         data['frequency'] = parse_fraction(st.text_input("周波数", value="1"))
 
     if graph_type not in ["circle", "sector"]:
-        data['x_min'] = parse_fraction(st.text_input("x最小値", value="-5"))
-        data['x_max'] = parse_fraction(st.text_input("x最大値", value="5"))
-    if graph_type not in ["circle", "sector"]:
         data['x_min'] = parse_fraction(st.text_input("x最小値", value="-10"))
         data['x_max'] = parse_fraction(st.text_input("x最大値", value="10"))
+        data['y_min'] = parse_fraction(st.text_input("y最小値", value="-10"))
+        data['y_max'] = parse_fraction(st.text_input("y最大値", value="10"))
 
     if graph_type in ["circle", "sector"]:
         data['radius'] = parse_fraction(st.text_input("半径", value="1"))
