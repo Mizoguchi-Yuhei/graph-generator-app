@@ -7,12 +7,12 @@ import streamlit as st
 from matplotlib.ticker import MaxNLocator
 from scipy import integrate
 from fractions import Fraction
+import matplotlib.font_manager as fm
 
 # 日本語フォントの設定
-plt.rcParams['font.family'] = ['Hiragino Sans', 'Yu Gothic', 'MS Gothic', 'IPAexGothic']
-plt.rcParams['font.sans-serif'] = ['Hiragino Sans', 'Yu Gothic', 'MS Gothic', 'IPAexGothic']
-plt.rcParams['pdf.fonttype'] = 42
-plt.rcParams['ps.fonttype'] = 42
+font_path = "ipaexg.ttf"  # フォントファイルのパス
+font_prop = fm.FontProperties(fname=font_path)
+plt.rcParams['font.family'] = font_prop.get_name()
 
 def parse_fraction(s):
     try:
@@ -20,7 +20,6 @@ def parse_fraction(s):
     except ValueError:
         st.error(f"無効な入力: {s}. 数値または分数 (例: 1/2) を入力してください。")
         return 0
-
 
 def create_graph(data):
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -70,9 +69,9 @@ def create_graph(data):
     else:
         title = "線形関数"
 
-    ax.set_title(title, fontsize=16)
-    ax.set_xlabel(data['xlabel'], fontsize=12)
-    ax.set_ylabel(data['ylabel'], fontsize=12)
+    ax.set_title(title, fontsize=16, fontproperties=font_prop)
+    ax.set_xlabel(data['xlabel'], fontsize=12, fontproperties=font_prop)
+    ax.set_ylabel(data['ylabel'], fontsize=12, fontproperties=font_prop)
     ax.grid(True)
 
     # x軸とy軸を太線に設定
@@ -90,7 +89,6 @@ def create_graph(data):
 
     plt.tight_layout()
     return fig
-
 
 def get_image_base64(fig):
     buf = io.BytesIO()
