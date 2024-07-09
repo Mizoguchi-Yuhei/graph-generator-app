@@ -31,21 +31,21 @@ def parse_linear_equation(equation, x):
     if 'x' not in equation:
         return float(equation) * np.ones_like(x)
 
-    parts = re.split('([+-])', equation)
+    parts = re.findall(r'([+-]?\d*\.?\d*x?)', equation)
     parts = [p for p in parts if p]  # 空の要素を削除
 
     a, b = 0, 0
-    for i in range(0, len(parts), 2):
-        coef = parts[i]
-        if i + 1 < len(parts):
-            term = parts[i + 1]
+    for part in parts:
+        if 'x' in part:
+            coef = part.replace('x', '')
+            if coef in ['+', '-']:
+                a += 1 if coef == '+' else -1
+            elif coef == '':
+                a += 1
+            else:
+                a += float(coef)
         else:
-            term = 'x'
-
-        if term == 'x':
-            a += float(coef) if coef not in ['+', '-'] else (1 if coef == '+' else -1)
-        else:
-            b += float(coef + term)
+            b += float(part)
 
     return a * x + b
 
