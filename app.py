@@ -3,11 +3,11 @@ import base64
 import io
 import json
 import re
+
+import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
-from matplotlib.ticker import MaxNLocator
-import matplotlib.font_manager as fm
 
 # 日本語フォントの設定
 font_path = "SawarabiMincho-Regular.ttf"  # フォントファイルのパス
