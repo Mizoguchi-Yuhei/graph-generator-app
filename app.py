@@ -2,16 +2,29 @@
 import base64
 import io
 import json
-
-import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
+from matplotlib.ticker import MaxNLocator
+import matplotlib.font_manager as fm
 
 # 日本語フォントの設定
 font_path = "SawarabiMincho-Regular.ttf"  # フォントファイルのパス
 font_prop = fm.FontProperties(fname=font_path)
 plt.rcParams['font.family'] = font_prop.get_name()
+
+
+def parse_equation(equation, x):
+    # 絶対値記号を含む式を処理する関数
+    if '|' in equation:
+        parts = equation.split('|')
+        inner_eq = parts[1].strip()
+        if inner_eq.startswith('x'):
+            return np.abs(x)
+        elif 'x' in inner_eq:
+            a, b = map(float, inner_eq.replace('x', '').split())
+            return np.abs(a * x + b)
+    return eval(equation.replace('x', 'x_val'))
 
 
 def create_graph(graph_data):
@@ -27,18 +40,15 @@ def create_graph(graph_data):
     x = np.linspace(x_min, x_max, 1000)
 
     if graph_type == 'linear':
-        if equation.startswith('y = |'):
-            # 絶対値関数の処理
-            inner_eq = equation[5:-1]  # '|' の中身を取得
-            y = np.abs(eval(inner_eq))
-        else:
-            # 通常の線形関数の処理
-            a = coefficients.get('a', 1)
-            b = coefficients.get('b', 0)
-            y = a * x + b
+        if equation.startswith('y = '):
+            equation = equation[4:]  # 'y = ' を削除
+        y = parse_equation(equation, x)
+    else:
+        # 他のグラフタイプの処理（必要に応じて追加）
+        y = x  # デフォルトの直線
 
     ax.plot(x, y)
-    ax.set_title(equation, fontsize=16, fontproperties=font_prop)
+    ax.set_title(graph_data.get('equation', ''), fontsize=16, fontproperties=font_prop)
     ax.set_xlabel('x', fontsize=12, fontproperties=font_prop)
     ax.set_ylabel('y', fontsize=12, fontproperties=font_prop)
     ax.grid(True)
