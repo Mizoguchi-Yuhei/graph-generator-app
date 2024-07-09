@@ -14,7 +14,6 @@ font_path = "SawarabiMincho-Regular.ttf"  # フォントファイルのパス
 font_prop = fm.FontProperties(fname=font_path)
 plt.rcParams['font.family'] = font_prop.get_name()
 
-
 def parse_equation(equation, x):
     # 絶対値記号を含む式を処理する関数
     if '|' in equation:
@@ -23,7 +22,6 @@ def parse_equation(equation, x):
         return np.abs(parse_linear_equation(inner_eq, x))
     else:
         return parse_linear_equation(equation, x)
-
 
 def parse_linear_equation(equation, x):
     # ax + b 形式の線形方程式を解析する関数
@@ -48,7 +46,6 @@ def parse_linear_equation(equation, x):
             b += float(part)
 
     return a * x + b
-
 
 def create_graph(graph_data):
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -89,13 +86,11 @@ def create_graph(graph_data):
     plt.tight_layout()
     return fig
 
-
 def get_image_base64(fig):
     buf = io.BytesIO()
     fig.savefig(buf, format='png')
     buf.seek(0)
     return base64.b64encode(buf.getvalue()).decode()
-
 
 def main():
     st.set_page_config(page_title="グラフ生成", page_icon="📊")
@@ -129,7 +124,6 @@ def main():
             st.error("無効なJSONフォーマットです。正しいJSONを入力してください。")
         except Exception as e:
             st.error(f"エラーが発生しました: {str(e)}")
-
 
 if __name__ == "__main__":
     main()
