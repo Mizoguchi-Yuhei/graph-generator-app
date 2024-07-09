@@ -2,6 +2,7 @@
 import base64
 import io
 import json
+import re
 import matplotlib.pyplot as plt
 import numpy as np
 import streamlit as st
@@ -19,12 +20,34 @@ def parse_equation(equation, x):
     if '|' in equation:
         parts = equation.split('|')
         inner_eq = parts[1].strip()
-        if inner_eq.startswith('x'):
-            return np.abs(x)
-        elif 'x' in inner_eq:
-            a, b = map(float, inner_eq.replace('x', '').split())
-            return np.abs(a * x + b)
-    return eval(equation.replace('x', 'x_val'))
+        return np.abs(parse_linear_equation(inner_eq, x))
+    else:
+        return parse_linear_equation(equation, x)
+
+
+def parse_linear_equation(equation, x):
+    # ax + b 形式の線形方程式を解析する関数
+    equation = equation.replace(' ', '')  # スペースを削除
+    if 'x' not in equation:
+        return float(equation) * np.ones_like(x)
+
+    parts = re.split('([+-])', equation)
+    parts = [p for p in parts if p]  # 空の要素を削除
+
+    a, b = 0, 0
+    for i in range(0, len(parts), 2):
+        coef = parts[i]
+        if i + 1 < len(parts):
+            term = parts[i + 1]
+        else:
+            term = 'x'
+
+        if term == 'x':
+            a += float(coef) if coef not in ['+', '-'] else (1 if coef == '+' else -1)
+        else:
+            b += float(coef + term)
+
+    return a * x + b
 
 
 def create_graph(graph_data):
@@ -35,7 +58,6 @@ def create_graph(graph_data):
     x_max = graph_data.get('x_max', 10)
     y_min = graph_data.get('y_min', -10)
     y_max = graph_data.get('y_max', 10)
-    coefficients = graph_data.get('coefficients', {})
 
     x = np.linspace(x_min, x_max, 1000)
 
